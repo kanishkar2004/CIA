@@ -1,0 +1,33 @@
+void route_encrypt(char *plain_text, int n, char *cipher_text) {
+    int len = strlen(plain_text);
+    int cols = (len + n - 1) / n;
+    char matrix[n][cols];
+    int index = 0;
+
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < cols; j++)
+            matrix[i][j] = index < len ? plain_text[index++] : 'x';
+
+    index = 0;
+    for (int j = 0; j < cols; j++)
+        for (int i = 0; i < n; i++)
+            cipher_text[index++] = matrix[i][j];
+    cipher_text[index] = '\0';
+}
+
+void route_decrypt(char *cipher_text, int n, char *plain_text) {
+    int len = strlen(cipher_text);
+    int cols = (len + n - 1) / n;
+    char matrix[n][cols];
+    int index = 0;
+
+    for (int j = 0; j < cols; j++)
+        for (int i = 0; i < n; i++)
+            matrix[i][j] = cipher_text[index++];
+
+    index = 0;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < cols; j++)
+            plain_text[index++] = matrix[i][j];
+    plain_text[len] = '\0';
+}
