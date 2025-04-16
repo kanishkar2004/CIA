@@ -1,0 +1,47 @@
+void ngram_encrypt(char *plain_text, int n, char *cipher_text) {
+    int len = strlen(plain_text), index = 0;
+    char processed_text[1000];
+    int processed_index = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (isalpha(plain_text[i])) {
+            processed_text[processed_index++] = toupper(plain_text[i]);
+        }
+    }
+
+    while (processed_index % n != 0) {
+        processed_text[processed_index++] = 'X';
+    }
+    processed_text[processed_index] = '\0';
+
+    for (int i = 0; i < processed_index; i += n) {
+        int shift = 5;
+        for (int j = 0; j < n; j++) {
+            cipher_text[index++] = ((processed_text[i + j] - 'A' + shift) % 26) + 'A';
+        }
+        if (i + n < processed_index) {
+            cipher_text[index++] = ' ';
+        }
+    }
+    cipher_text[index] = '\0';
+}
+
+void ngram_decrypt(char *cipher_text, int n, char *plain_text) {
+    char pure_cipher[1000];
+    int pure_index = 0;
+    for (int i = 0; cipher_text[i] != '\0'; i++) {
+        if (cipher_text[i] != ' ') {
+            pure_cipher[pure_index++] = cipher_text[i];
+        }
+    }
+    pure_cipher[pure_index] = '\0';
+
+    int output_index = 0;
+    for (int i = 0; i < pure_index; i += n) {
+        int shift = 5;
+        for (int j = 0; j < n && (i + j) < pure_index; j++) {
+            plain_text[output_index++] = ((pure_cipher[i + j] - 'A' - shift + 26) % 26) + 'A';
+        }
+    }
+    plain_text[output_index] = '\0';
+}
