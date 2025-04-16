@@ -1,0 +1,22 @@
+void beaufort_encrypt(char *plain_text, char *key, char *cipher_text) {
+    int i = 0, key_index = 0;
+    int key_len = strlen(key);
+    
+    while (plain_text[i] != '\0') {
+        if (isalpha(plain_text[i])) {
+            int shift_base = 97;
+            int plain_val = tolower(plain_text[i]) - 'a';
+            int key_val = tolower(key[key_index % key_len]) - 'a';
+            cipher_text[i] = ((key_val - plain_val + 26) % 26) + shift_base;
+            key_index++;
+        } else {
+            cipher_text[i] = plain_text[i];
+        }
+        i++;
+    }
+    cipher_text[i] = '\0';
+}
+
+void beaufort_decrypt(char *cipher_text, char *key, char *plain_text) {
+    beaufort_encrypt(cipher_text, key, plain_text);
+}
