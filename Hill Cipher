@@ -1,0 +1,77 @@
+void matrix_multiply(int key[2][2], int block[2], int result[2]) {
+    result[0] = (key[0][0] * block[0] + key[0][1] * block[1]) % 26;
+    result[1] = (key[1][0] * block[0] + key[1][1] * block[1]) % 26;
+}
+
+int determinant(int matrix[2][2]) {
+    return (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]);
+}
+
+void matrix_inverse(int matrix[2][2], int inverse[2][2]) {
+    int det = determinant(matrix) % 26;
+    if (det < 0) det += 26;
+    int det_inv = mod_inverse(det, 26);
+
+    inverse[0][0] = (matrix[1][1] * det_inv) % 26;
+    inverse[0][1] = ((-matrix[0][1] + 26) * det_inv) % 26;
+    inverse[1][0] = ((-matrix[1][0] + 26) * det_inv) % 26;
+    inverse[1][1] = (matrix[0][0] * det_inv) % 26;
+}
+
+void hill_encrypt(char *plain_text, int key[4], char *cipher_text) {
+    int key_matrix[2][2] = {
+        {key[0], key[1]},
+        {key[2], key[3]}
+    };
+
+    char processed_text[1000];
+    int j = 0;
+    for (int i = 0; plain_text[i] != '\0'; i++) {
+        if (isalpha(plain_text[i])) {
+            processed_text[j++] = tolower(plain_text[i]);
+        }
+    }
+    processed_text[j] = '\0';
+
+    if (strlen(processed_text) % 2 != 0) {
+        strcat(processed_text, "x");
+    }
+
+    int len = strlen(processed_text);
+    j = 0;
+
+    for (int i = 0; i < len; i += 2) {
+        int block[2] = {processed_text[i] - 'a', processed_text[i+1] - 'a'};
+        int result[2];
+
+        matrix_multiply(key_matrix, block, result);
+        cipher_text[j++] = result[0] + 'a';
+        cipher_text[j++] = result[1] + 'a';
+    }
+
+    cipher_text[j] = '\0';
+}
+
+void hill_decrypt(char *cipher_text, int key[4], char *plain_text) {
+    int key_matrix[2][2] = {
+        {key[0], key[1]},
+        {key[2], key[3]}
+    };
+
+    int inverse_matrix[2][2];
+    matrix_inverse(key_matrix, inverse_matrix);
+
+    int len = strlen(cipher_text);
+    int j = 0;
+
+    for (int i = 0; i < len; i += 2) {
+        int block[2] = {cipher_text[i] - 'a', cipher_text[i+1] - 'a'};
+        int result[2];
+
+        matrix_multiply(inverse_matrix, block, result);
+        plain_text[j++] = result[0] + 'a';
+        plain_text[j++] = result[1] + 'a';
+    }
+
+    plain_text[j] = '\0';
+}
