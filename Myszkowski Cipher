@@ -1,0 +1,56 @@
+void myszkowski_encrypt(char *plain_text, char *key, char *cipher_text) {
+    int key_len = strlen(key);
+    int text_len = strlen(plain_text);
+    int order[key_len];
+    for (int i = 0; i < key_len; i++) order[i] = i;
+
+    for (int i = 0; i < key_len - 1; i++)
+        for (int j = i + 1; j < key_len; j++)
+            if (key[order[i]] > key[order[j]]) {
+                int temp = order[i];
+                order[i] = order[j];
+                order[j] = temp;
+            }
+
+    int rows = (text_len + key_len - 1) / key_len;
+    char grid[rows][key_len];
+    int index = 0;
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < key_len; j++)
+            grid[i][j] = index < text_len ? plain_text[index++] : 'x';
+
+    index = 0;
+    for (int i = 0; i < key_len; i++)
+        for (int j = 0; j < rows; j++)
+            cipher_text[index++] = grid[j][order[i]];
+    cipher_text[index] = '\0';
+}
+
+void myszkowski_decrypt(char *cipher_text, char *key, char *plain_text) {
+    int key_len = strlen(key);
+    int text_len = strlen(cipher_text);
+    int rows = (text_len + key_len - 1) / key_len;
+    int order[key_len];
+    for (int i = 0; i < key_len; i++) order[i] = i;
+
+    for (int i = 0; i < key_len - 1; i++)
+        for (int j = i + 1; j < key_len; j++)
+            if (key[order[i]] > key[order[j]]) {
+                int temp = order[i];
+                order[i] = order[j];
+                order[j] = temp;
+            }
+
+    char grid[rows][key_len];
+    int index = 0;
+    for (int i = 0; i < key_len; i++)
+        for (int j = 0; j < rows; j++)
+            grid[j][order[i]] = cipher_text[index++];
+
+    index = 0;
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < key_len; j++)
+            if (index < text_len)
+                plain_text[index++] = grid[i][j];
+    plain_text[text_len] = '\0';
+}
