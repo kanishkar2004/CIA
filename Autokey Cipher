@@ -1,0 +1,51 @@
+void autokey_encrypt(char *plain_text, char *key, char *cipher_text) {
+    int i = 0;
+    int key_len = strlen(key);
+    char *full_key = (char *)malloc(strlen(plain_text) + key_len + 1);
+    
+    strcpy(full_key, key);
+    
+    while (plain_text[i] != '\0') {
+        if (isalpha(plain_text[i])) {
+            int shift_base = isupper(plain_text[i]) ? 65 : 97;
+            int key_shift;
+            
+            if (i < key_len) {
+                key_shift = tolower(key[i]) - 'a';
+            } else {
+                key_shift = tolower(plain_text[i - key_len]) - 'a';
+            }
+            
+            cipher_text[i] = ((tolower(plain_text[i]) - 'a' + key_shift) % 26) + shift_base;
+        } else {
+            cipher_text[i] = plain_text[i];
+        }
+        i++;
+    }
+    cipher_text[i] = '\0';
+    free(full_key);
+}
+
+void autokey_decrypt(char *cipher_text, char *key, char *plain_text) {
+    int i = 0;
+    int key_len = strlen(key);
+    
+    while (cipher_text[i] != '\0') {
+        if (isalpha(cipher_text[i])) {
+            int shift_base = isupper(cipher_text[i]) ? 65 : 97;
+            int key_shift;
+            
+            if (i < key_len) {
+                key_shift = tolower(key[i]) - 'a';
+            } else {
+                key_shift = tolower(plain_text[i - key_len]) - 'a';
+            }
+            
+            plain_text[i] = ((tolower(cipher_text[i]) - 'a' - key_shift + 26) % 26) + shift_base;
+        } else {
+            plain_text[i] = cipher_text[i];
+        }
+        i++;
+    }
+    plain_text[i] = '\0';
+}
