@@ -1,0 +1,35 @@
+void gronsfeld_encrypt(char *plain_text, char *key, char *cipher_text) {
+    int i = 0, key_index = 0;
+    int key_len = strlen(key);
+    
+    while (plain_text[i] != '\0') {
+        if (isalpha(plain_text[i])) {
+            int shift_base = isupper(plain_text[i]) ? 65 : 97;
+            int key_shift = key[key_index % key_len] - '0';
+            cipher_text[i] = ((tolower(plain_text[i]) - 'a' + key_shift) % 26) + shift_base;
+            key_index++;
+        } else {
+            cipher_text[i] = plain_text[i];
+        }
+        i++;
+    }
+    cipher_text[i] = '\0';
+}
+
+void gronsfeld_decrypt(char *cipher_text, char *key, char *plain_text) {
+    int i = 0, key_index = 0;
+    int key_len = strlen(key);
+    
+    while (cipher_text[i] != '\0') {
+        if (isalpha(cipher_text[i])) {
+            int shift_base = isupper(cipher_text[i]) ? 65 : 97;
+            int key_shift = key[key_index % key_len] - '0';
+            plain_text[i] = ((tolower(cipher_text[i]) - 'a' - key_shift + 26) % 26) + shift_base;
+            key_index++;
+        } else {
+            plain_text[i] = cipher_text[i];
+        }
+        i++;
+    }
+    plain_text[i] = '\0';
+}
